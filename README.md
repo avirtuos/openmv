@@ -1,4 +1,4 @@
-#OpenMV Cam
+# OpenMV Cam
 
 This repository is a collection of micro-python scripts and small projects / tutorials that leverage the <a href='https://openmv.io/'>OpenMV Cam</a>
 
