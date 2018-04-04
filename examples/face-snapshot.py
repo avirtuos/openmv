@@ -11,7 +11,11 @@
 # contrast check in constant time (the reason for feature detection being
 # grayscale only is because of the space requirment for the integral image).
 
-import sensor, time, image
+import pyb, sensor, time, image, os
+
+print(os.listdir("/"))
+if "face-detect" not in os.listdir("/"):
+    os.mkdir("/face-detect")
 
 # Reset sensor
 sensor.reset()
@@ -23,17 +27,19 @@ sensor.set_gainceiling(16)
 sensor.set_framesize(sensor.QVGA)
 sensor.set_pixformat(sensor.GRAYSCALE)
 
+sensor.skip_frames(time = 2000)
+
 # Load Haar Cascade
 # By default this will use all stages, lower satges is faster but less accurate.
 face_cascade = image.HaarCascade("frontalface", stages=25)
 print(face_cascade)
 
-sensor.skip_frames(time = 2000)     # Wait for settings take effect.
-
 # FPS clock
 clock = time.clock()
 
+led = pyb.LED(3)
 
+count = 0
 while (True):
     clock.tick()
 
@@ -43,15 +49,29 @@ while (True):
     # Find objects.
     # Note: Lower scale factor scales-down the image more and detects smaller objects.
     # Higher threshold results in a higher detection rate, with more false positives.
-    objects = img.find_features(face_cascade, threshold=0.65, scale_factor=1.1)
+    objects = img.find_features(face_cascade, threshold=0.75, scale_factor=1.1)
 
     # Draw objects
-    count = 0
+
     for r in objects:
         img.draw_rectangle(r)
         print("%s %s" % (count, r))
         count = count +1
 
+    if len(objects) > 0:
+
+        #led.on()
+        #time.sleep(50)
+        #led.off()
+        #time.sleep(50)
+        #led.on()
+        #time.sleep(50)
+        #led.off()
+
+        filename = "/face-detect/face-%s" % count
+        print(filename)
+        img.compress(100).save(filename)
+
     # Print FPS.
     # Note: Actual FPS is higher, streaming the FB makes it slower.
-    print(clock.fps())
+    #print(clock.fps())
